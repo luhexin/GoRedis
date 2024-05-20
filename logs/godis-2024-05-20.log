@@ -1,0 +1,5 @@
+[INFO][server.go:35] 2024/05/20 19:53:01 start listen
+[INFO][server.go:62] 2024/05/20 19:53:37 accepted link
+[INFO][echo.go:50] 2024/05/20 19:54:21 Connection close
+[INFO][server.go:45] 2024/05/20 19:54:55 shutting down
+[INFO][echo.go:65] 2024/05/20 19:54:55 handler shutting down
