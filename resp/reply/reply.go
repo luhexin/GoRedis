@@ -27,6 +27,11 @@ func MakeBulkReply(arg []byte) *BulkReply {
 	}
 }
 
+// MakeNullBulkReply creates NullBulkReply
+func MakeNullBulkReply() *BulkReply {
+	return &BulkReply{}
+}
+
 // ToBytes marshal redis.Reply
 func (r *BulkReply) ToBytes() []byte {
 	if len(r.Arg) == 0 { //如果什么都没有，回复$-1

@@ -24,7 +24,7 @@ func fileExists(filename string) bool {
 func main() {
 	logger.Setup(&logger.Settings{
 		Path:       "logs",
-		Name:       "godis",
+		Name:       "goRedis",
 		Ext:        "log",
 		TimeFormat: "2006-01-02",
 	})
