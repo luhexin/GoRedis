@@ -11,9 +11,9 @@ import (
 
 // DB 存储数据并执行用户命令
 type DB struct {
-	index int
-	// key -> DataEntity
-	data dict.Dict
+	index  int
+	data   dict.Dict
+	addAof func(CmdLine)
 }
 
 // ExecFunc 是Exec的接口
@@ -26,7 +26,8 @@ type CmdLine = [][]byte
 // makeDB 创建DB数据库
 func makeDB() *DB {
 	db := &DB{
-		data: dict.MakeSyncDict(),
+		data:   dict.MakeSyncDict(),
+		addAof: func(line CmdLine) {}, //防止回复数据的时候有错误
 	}
 	return db
 }

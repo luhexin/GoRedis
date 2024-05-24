@@ -1,0 +1,6 @@
+[WARN][aof.go:90] 2024/05/24 21:29:17 open appendonly.aof: The system cannot find the file specified.
+[INFO][server.go:35] 2024/05/24 21:29:17 start listen
+[INFO][server.go:62] 2024/05/24 21:29:36 accepted link
+[INFO][handler.go:68] 2024/05/24 21:30:47 connection closed: 127.0.0.1:1828
+[INFO][server.go:45] 2024/05/24 21:31:03 shutting down
+[INFO][handler.go:103] 2024/05/24 21:31:03 handler shutting down...

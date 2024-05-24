@@ -2,6 +2,7 @@ package database
 
 /*调用底层业务的 db*/
 import (
+	"GoRedis/aof"
 	"GoRedis/config"
 	"GoRedis/interface/resp"
 	"GoRedis/lib/logger"
@@ -14,7 +15,8 @@ import (
 
 // Database 一组分数据库
 type Database struct {
-	dbSet []*DB
+	dbSet      []*DB
+	aofHandler *aof.AofHandler
 }
 
 // NewDatabase 新建一个 redis 内核
@@ -28,6 +30,21 @@ func NewDatabase() *Database {
 		singleDB := makeDB()
 		singleDB.index = i
 		mdb.dbSet[i] = singleDB
+	}
+	if config.Properties.AppendOnly {
+		aofHandler, err := aof.NewAOFHandler(mdb)
+		if err != nil {
+			panic(err)
+		}
+		mdb.aofHandler = aofHandler
+		for _, db := range mdb.dbSet {
+			//dp是指针数组, 会发生内存逃逸; 防止传入mdb.aofHandler.AddAof的db因为后序遍历更改
+			singleDB := db
+			//初始化addAof方法
+			singleDB.addAof = func(line CmdLine) {
+				mdb.aofHandler.AddAof(singleDB.index, line)
+			}
+		}
 	}
 	return mdb
 }
