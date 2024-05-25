@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"GoRedis/cluster"
+	"GoRedis/config"
 	"GoRedis/database"
 	databaseface "GoRedis/interface/database"
 	"GoRedis/lib/logger"
@@ -33,7 +35,12 @@ type RespHandler struct {
 // MakeHandler creates a RespHandler instance
 func MakeHandler() *RespHandler {
 	var db databaseface.Database
-	db = database.NewDatabase() //redis 内核
+	// 判断是否启动集群
+	if config.Properties.Self != "" && len(config.Properties.Peers) > 0 {
+		db = cluster.MakeClusterDatabase()
+	} else {
+		db = database.NewStandaloneDatabase() //单机 redis 内核
+	}
 	return &RespHandler{
 		db: db,
 	}

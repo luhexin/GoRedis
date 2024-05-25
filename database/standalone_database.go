@@ -13,20 +13,20 @@ import (
 	"strings"
 )
 
-// Database 一组分数据库
-type Database struct {
+// StandaloneDatabase 一组分数据库
+type StandaloneDatabase struct {
 	dbSet      []*DB
 	aofHandler *aof.AofHandler
 }
 
-// NewDatabase 新建一个 redis 内核
-func NewDatabase() *Database {
-	mdb := &Database{}
+// NewStandaloneDatabase 新建一个 redis 内核
+func NewStandaloneDatabase() *StandaloneDatabase {
+	mdb := &StandaloneDatabase{}
 	if config.Properties.Databases == 0 { //读取配置文件
 		config.Properties.Databases = 16
 	}
 	mdb.dbSet = make([]*DB, config.Properties.Databases)
-	for i := range mdb.dbSet { // 填充 Database 结构体中的DB数组，每一个DB的底层都是Sync.map
+	for i := range mdb.dbSet { // 填充 StandaloneDatabase 结构体中的DB数组，每一个DB的底层都是Sync.map
 		singleDB := makeDB()
 		singleDB.index = i
 		mdb.dbSet[i] = singleDB
@@ -51,7 +51,7 @@ func NewDatabase() *Database {
 
 // Exec 执行命令
 // 将用户指令转交给分DB执行
-func (mdb *Database) Exec(c resp.Connection, cmdLine [][]byte) (result resp.Reply) {
+func (mdb *StandaloneDatabase) Exec(c resp.Connection, cmdLine [][]byte) (result resp.Reply) {
 	defer func() {
 		if err := recover(); err != nil {
 			logger.Warn(fmt.Sprintf("error occurs: %v\n%s", err, string(debug.Stack())))
@@ -72,17 +72,17 @@ func (mdb *Database) Exec(c resp.Connection, cmdLine [][]byte) (result resp.Repl
 }
 
 // Close 关闭数据库
-func (mdb *Database) Close() {
+func (mdb *StandaloneDatabase) Close() {
 
 }
 
-func (mdb *Database) AfterClientClose(c resp.Connection) {
+func (mdb *StandaloneDatabase) AfterClientClose(c resp.Connection) {
 }
 
 // 提供用户选择DB的功能
 // 通过用户发送的指令args, 修改resp.Connection字段
 // select 1
-func execSelect(c resp.Connection, mdb *Database, args [][]byte) resp.Reply {
+func execSelect(c resp.Connection, mdb *StandaloneDatabase, args [][]byte) resp.Reply {
 	dbIndex, err := strconv.Atoi(string(args[0]))
 	if err != nil {
 		return reply.MakeErrReply("ERR invalid DB index")
