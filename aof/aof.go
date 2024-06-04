@@ -83,7 +83,7 @@ func (handler *AofHandler) handleAof() {
 	}
 }
 
-// LoadAof 读取 aof 文件, 重写aof文件中的内容
+// LoadAof 读取 aof 文件, 执行里面的方法
 func (handler *AofHandler) LoadAof() {
 	//1. 以只读的方式Open, 打开文件
 	file, err := os.Open(handler.aofFilename)

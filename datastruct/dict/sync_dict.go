@@ -1,8 +1,10 @@
 package dict
 
-import "sync"
+import (
+	"sync"
+)
 
-// SyncDict 封装了一个映射，它不是线程安全的
+// SyncDict 封装了一个sync.Map，是线程安全的
 type SyncDict struct {
 	m sync.Map
 }

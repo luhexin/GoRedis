@@ -26,7 +26,7 @@ type CmdLine = [][]byte
 // makeDB 创建DB数据库
 func makeDB() *DB {
 	db := &DB{
-		data:   dict.MakeSyncDict(),
+		data:   dict.MakeSyncDict(),   //包级别的函数直接通过包名调用，不需要实例化某个类型的对象
 		addAof: func(line CmdLine) {}, //防止回复数据的时候有错误
 	}
 	return db

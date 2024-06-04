@@ -3,7 +3,7 @@ package dict
 // Consumer 用于遍历 dict，如果返回 false，遍历将被中断
 type Consumer func(key string, val interface{}) bool
 
-// Dict 为了改善和迭代，定义为接口
+// Dict 最底层，保存Redis的数据结构
 type Dict interface {
 	Get(key string) (val interface{}, exists bool)
 	Len() int

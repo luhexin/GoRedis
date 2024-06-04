@@ -8,15 +8,16 @@ import (
 )
 
 type connectionFactory struct {
-	Peer string //连接池连接的地址
+	Peer string // 要连接的地址
 }
 
+// MakeObject 创建连接池对象
 func (f *connectionFactory) MakeObject(ctx context.Context) (*pool.PooledObject, error) {
 	c, err := client.MakeClient(f.Peer)
 	if err != nil {
 		return nil, err
 	}
-	c.Start() // 登录
+	c.Start() //启动客户端
 	return pool.NewPooledObject(c), nil
 }
 

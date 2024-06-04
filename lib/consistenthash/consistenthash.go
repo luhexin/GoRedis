@@ -10,9 +10,9 @@ type HashFunc func(data []byte) uint32
 
 // NodeMap 存储所有节点的信息、所有节点一致性hash
 type NodeMap struct {
-	hashFunc    HashFunc
-	nodeHashs   []int          // 为了排序, int: 64位
-	nodehashMap map[int]string // 哈希值:地址
+	hashFunc    HashFunc       // 哈希函数
+	nodeHashs   []int          // 记录node的哈希值; 为了排序
+	nodehashMap map[int]string // key: 哈希值; val: 地址
 }
 
 func NewNodeMap(fn HashFunc) *NodeMap {

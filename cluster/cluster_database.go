@@ -20,7 +20,7 @@ type ClusterDatabase struct {
 
 	nodes          []string                    //整个集群的节点
 	peerPicker     *consistenthash.NodeMap     //节点选择器
-	peerConnection map[string]*pool.ObjectPool //节点的键：连接池; 保存多个连接池，比如三个节点需要两个连接池
+	peerConnection map[string]*pool.ObjectPool //节点的地址：连接池; 三个节点需要两个连接池
 	db             databaseface.Database       //下层：standalone_database
 }
 
