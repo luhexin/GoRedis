@@ -57,7 +57,7 @@ func parse0(reader io.Reader, ch chan<- *Payload) {
 		// 1. read line：取出一行指令, msg = *3
 		var ioErr bool
 		msg, ioErr, err = readLine(bufReader, &state)
-		if err != nil {
+		if !errors.Is(err, nil) {
 			if ioErr { // 发生io错误，停止解析
 				ch <- &Payload{
 					Err: err,
@@ -78,7 +78,7 @@ func parse0(reader io.Reader, ch chan<- *Payload) {
 			// 此时说明没有初始化，没有打开多行解析模式;
 			if msg[0] == '*' { //没有开始解析
 				err = parseMultiBulkHeader(msg, &state)
-				if err != nil {
+				if !errors.Is(err, nil) {
 					ch <- &Payload{
 						Err: errors.New("protocol error: " + string(msg)),
 					}
@@ -94,7 +94,7 @@ func parse0(reader io.Reader, ch chan<- *Payload) {
 				}
 			} else if msg[0] == '$' { //$3\r\nSET\r\: 单行没有开始解析
 				err = parseBulkHeader(msg, &state)
-				if err != nil {
+				if !errors.Is(err, nil) {
 					ch <- &Payload{
 						Err: errors.New("protocol error: " + string(msg)),
 					}
@@ -122,7 +122,7 @@ func parse0(reader io.Reader, ch chan<- *Payload) {
 			// parseMultiBulkHeader、parseBulkHeader：state.readingMultiLine -> true
 			// *3\r\n：已经在上面解析了; $3\r\nSET\r\n$3\r\nkey\r\n$5\r\nvalue\r\n：未解析
 			err = readBody(msg, &state) // 读取的数据放到state.args, 反复读取解析指令
-			if err != nil {
+			if !errors.Is(err, nil) {
 				ch <- &Payload{
 					Err: errors.New("protocol error: " + string(msg)),
 				}
@@ -156,7 +156,7 @@ func readLine(bufReader *bufio.Reader, state *readState) ([]byte, bool, error) {
 	var err error
 	if state.bulkLen == 0 { // 之前没有读到$数字: \r\n切分
 		msg, err = bufReader.ReadBytes('\n') //msg: $3\r\n
-		if err != nil {
+		if !errors.Is(err, nil) {
 			return nil, true, err
 		}
 		if len(msg) == 0 || msg[len(msg)-2] != '\r' { //格式错误
@@ -166,7 +166,7 @@ func readLine(bufReader *bufio.Reader, state *readState) ([]byte, bool, error) {
 		// 如果读取到$后的数字是3, state.bulkLen = 3
 		msg = make([]byte, state.bulkLen+2)
 		_, err = io.ReadFull(bufReader, msg) //塞满msg, msg : key\r\n
-		if err != nil {
+		if !errors.Is(err, nil) {
 			return nil, true, err
 		}
 		if len(msg) == 0 ||
@@ -185,7 +185,7 @@ func parseMultiBulkHeader(msg []byte, state *readState) error {
 	var err error
 	var expectedLine uint64
 	expectedLine, err = strconv.ParseUint(string(msg[1:len(msg)-2]), 10, 32)
-	if err != nil {
+	if !errors.Is(err, nil) {
 		return errors.New("protocol error: " + string(msg))
 	}
 	if expectedLine == 0 {
@@ -207,7 +207,7 @@ func parseMultiBulkHeader(msg []byte, state *readState) error {
 func parseBulkHeader(msg []byte, state *readState) error {
 	var err error
 	state.bulkLen, err = strconv.ParseInt(string(msg[1:len(msg)-2]), 10, 64)
-	if err != nil {
+	if !errors.Is(err, nil) {
 		return errors.New("protocol error: " + string(msg))
 	}
 	if state.bulkLen == -1 { // null bulk
@@ -250,7 +250,7 @@ func readBody(msg []byte, state *readState) error {
 	if line[0] == '$' {
 		// $3\r\n 取出3，并塞入state.bulkLen
 		state.bulkLen, err = strconv.ParseInt(string(line[1:]), 10, 64)
-		if err != nil {
+		if !errors.Is(err, nil) {
 			return errors.New("protocol error: " + string(msg))
 		}
 		// $0\r\n

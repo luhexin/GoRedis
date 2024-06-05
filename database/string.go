@@ -5,6 +5,7 @@ import (
 	"GoRedis/interface/resp"
 	"GoRedis/lib/utils"
 	"GoRedis/resp/reply"
+	"errors"
 )
 
 func (db *DB) getAsString(key string) ([]byte, reply.ErrorReply) {
@@ -23,7 +24,7 @@ func (db *DB) getAsString(key string) ([]byte, reply.ErrorReply) {
 func execGet(db *DB, args [][]byte) resp.Reply {
 	key := string(args[0])
 	bytes, err := db.getAsString(key)
-	if err != nil {
+	if !errors.Is(err, nil) {
 		return err
 	}
 	if bytes == nil {

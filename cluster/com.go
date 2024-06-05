@@ -21,7 +21,7 @@ func (cluster *ClusterDatabase) getPeerClient(peer string) (*client.Client, erro
 	}
 	// 2. 在连接池里面取出一个客户端
 	raw, err := factory.BorrowObject(context.Background())
-	if err != nil {
+	if !errors.Is(err, nil) {
 		return nil, err
 	}
 	// 3. 转换客户端的类型
@@ -51,7 +51,7 @@ func (cluster *ClusterDatabase) relay(peer string, c resp.Connection, args [][]b
 	}
 	// 2. 操作兄弟节点; 拿一个连接出来
 	peerClient, err := cluster.getPeerClient(peer)
-	if err != nil {
+	if !errors.Is(err, nil) {
 		return reply.MakeErrReply(err.Error())
 	}
 	defer func() { // 避免连接耗尽，注册归还连接

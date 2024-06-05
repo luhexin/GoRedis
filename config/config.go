@@ -3,6 +3,7 @@ package config
 import (
 	"GoRedis/lib/logger"
 	"bufio"
+	"errors"
 	"io"
 	"os"
 	"reflect"
@@ -54,7 +55,7 @@ func parse(src io.Reader) *ServerProperties {
 			rawMap[strings.ToLower(key)] = value
 		}
 	}
-	if err := scanner.Err(); err != nil {
+	if err := scanner.Err(); !errors.Is(err, nil) {
 		logger.Fatal(err)
 	}
 
@@ -97,7 +98,7 @@ func parse(src io.Reader) *ServerProperties {
 // SetupConfig read config file and store properties into Properties
 func SetupConfig(configFilename string) {
 	file, err := os.Open(configFilename)
-	if err != nil {
+	if !errors.Is(err, nil) {
 		panic(err)
 	}
 	defer file.Close()

@@ -8,6 +8,7 @@ import (
 	"GoRedis/resp/connection"
 	"GoRedis/resp/parser"
 	"GoRedis/resp/reply"
+	"errors"
 	"io"
 	"os"
 	"strconv"
@@ -40,7 +41,7 @@ func NewAOFHandler(db databaseface.Database) (*AofHandler, error) {
 	handler.LoadAof()
 	// 从头到尾到会用到，所以不需要关闭文件流
 	aofFile, err := os.OpenFile(handler.aofFilename, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0600)
-	if err != nil {
+	if !errors.Is(err, nil) {
 		return nil, err
 	}
 	handler.aofFile = aofFile
@@ -77,7 +78,7 @@ func (handler *AofHandler) handleAof() {
 		}
 		data := reply.MakeMultiBulkReply(p.cmdLine).ToBytes()
 		_, err := handler.aofFile.Write(data)
-		if err != nil {
+		if !errors.Is(err, nil) {
 			logger.Warn(err)
 		}
 	}
@@ -87,7 +88,7 @@ func (handler *AofHandler) handleAof() {
 func (handler *AofHandler) LoadAof() {
 	//1. 以只读的方式Open, 打开文件
 	file, err := os.Open(handler.aofFilename)
-	if err != nil {
+	if !errors.Is(err, nil) {
 		logger.Warn(err)
 		return
 	}
@@ -98,8 +99,8 @@ func (handler *AofHandler) LoadAof() {
 	//3. 读取channel
 	for p := range ch {
 		// 4.1 管道读取问题
-		if p.Err != nil {
-			if p.Err == io.EOF {
+		if !errors.Is(p.Err, nil) {
+			if errors.Is(p.Err, io.EOF) {
 				break
 			}
 			logger.Error("parse error: " + p.Err.Error())

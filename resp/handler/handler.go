@@ -11,6 +11,7 @@ import (
 	"GoRedis/resp/parser"
 	"GoRedis/resp/reply"
 	"context"
+	"errors"
 	"io"
 	"net"
 	"strings"
@@ -78,7 +79,7 @@ func (h *RespHandler) Handle(ctx context.Context, conn net.Conn) {
 			// 协议错误
 			errReply := reply.MakeErrReply(payload.Err.Error())
 			err := client.Write(errReply.ToBytes())
-			if err != nil {
+			if !errors.Is(err, nil) {
 				h.closeClient(client)
 				logger.Info("connection closed: " + client.RemoteAddr().String())
 				return

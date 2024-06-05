@@ -6,6 +6,7 @@ import (
 	"GoRedis/lib/sync/wait"
 	"bufio"
 	"context"
+	"errors"
 	"io"
 	"net"
 	"sync"
@@ -45,8 +46,8 @@ func (handler *EchoHandler) Handle(ctx context.Context, conn net.Conn) {
 	//服务客户, 如果信息换行则写回信息
 	for true {
 		msg, err := reader.ReadString('\n')
-		if err != nil {
-			if err == io.EOF {
+		if !errors.Is(err, nil) {
+			if errors.Is(err, io.EOF) {
 				logger.Info("Connection close")
 				handler.activeConn.Delete(client)
 			} else {

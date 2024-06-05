@@ -5,6 +5,7 @@ import (
 	"GoRedis/lib/logger"
 	"GoRedis/resp/handler"
 	"GoRedis/tcp"
+	"errors"
 	"fmt"
 	"os"
 )
@@ -18,7 +19,7 @@ var defaultProperties = &config.ServerProperties{
 
 func fileExists(filename string) bool {
 	info, err := os.Stat(filename)
-	return err == nil && !info.IsDir()
+	return errors.Is(err, nil) && !info.IsDir()
 }
 
 func main() {

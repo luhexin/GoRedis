@@ -7,6 +7,7 @@ import (
 	"GoRedis/interface/resp"
 	"GoRedis/lib/logger"
 	"GoRedis/resp/reply"
+	"errors"
 	"fmt"
 	"runtime/debug"
 	"strconv"
@@ -84,7 +85,7 @@ func (mdb *StandaloneDatabase) AfterClientClose(c resp.Connection) {
 // select 1
 func execSelect(c resp.Connection, mdb *StandaloneDatabase, args [][]byte) resp.Reply {
 	dbIndex, err := strconv.Atoi(string(args[0]))
-	if err != nil {
+	if !errors.Is(err, nil) {
 		return reply.MakeErrReply("ERR invalid DB index")
 	}
 	if dbIndex >= len(mdb.dbSet) {

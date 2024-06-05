@@ -4,6 +4,7 @@ import (
 	"GoRedis/interface/tcp"
 	"GoRedis/lib/logger"
 	"context"
+	"errors"
 	"net"
 	"os"
 	"os/signal"
@@ -29,7 +30,7 @@ func ListenAndServeWithSignal(cfg *Config, handler tcp.Handler) error {
 	}()
 
 	listener, err := net.Listen("tcp", cfg.Address)
-	if err != nil {
+	if !errors.Is(err, nil) {
 		return err
 	}
 	logger.Info("start listen")
@@ -56,7 +57,7 @@ func ListenAndServe(listner net.Listener, handler tcp.Handler, closeChan <-chan 
 	var waitDone sync.WaitGroup //等待所有客户端退出
 	for true {
 		conn, err := listner.Accept()
-		if err != nil {
+		if !errors.Is(err, nil) {
 			break
 		}
 		logger.Info("accepted link")

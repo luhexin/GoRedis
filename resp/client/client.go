@@ -6,6 +6,7 @@ import (
 	"GoRedis/lib/sync/wait"
 	"GoRedis/resp/parser"
 	"GoRedis/resp/reply"
+	"errors"
 	"net"
 	"runtime/debug"
 	"sync"
@@ -41,7 +42,7 @@ const (
 // MakeClient creates a new client
 func MakeClient(addr string) (*Client, error) {
 	conn, err := net.Dial("tcp", addr)
-	if err != nil {
+	if !errors.Is(err, nil) {
 		return nil, err
 	}
 	return &Client{
@@ -59,7 +60,7 @@ func (client *Client) Start() {
 	go client.handleWrite()
 	go func() {
 		err := client.handleRead()
-		if err != nil {
+		if !errors.Is(err, nil) {
 			logger.Error(err)
 		}
 	}()
@@ -82,7 +83,7 @@ func (client *Client) Close() {
 
 func (client *Client) handleConnectionError(err error) error {
 	err1 := client.conn.Close()
-	if err1 != nil {
+	if !errors.Is(err1, nil) {
 		if opErr, ok := err1.(*net.OpError); ok {
 			if opErr.Err.Error() != "use of closed network connection" {
 				return err1
@@ -92,7 +93,7 @@ func (client *Client) handleConnectionError(err error) error {
 		}
 	}
 	conn, err1 := net.Dial("tcp", client.addr)
-	if err1 != nil {
+	if !errors.Is(err1, nil) {
 		logger.Error(err1)
 		return err1
 	}
@@ -157,9 +158,9 @@ func (client *Client) doRequest(req *request) {
 	bytes := re.ToBytes()
 	_, err := client.conn.Write(bytes)
 	i := 0
-	for err != nil && i < 3 {
+	for !errors.Is(err, nil) && i < 3 {
 		err = client.handleConnectionError(err)
-		if err == nil {
+		if errors.Is(err, nil) {
 			_, err = client.conn.Write(bytes)
 		}
 		i++
