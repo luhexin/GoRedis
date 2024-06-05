@@ -37,3 +37,19 @@ func BytesEquals(a []byte, b []byte) bool {
 	}
 	return true
 }
+
+// If 返回值 v1 或 v2 取决于 cond 是否为 true
+func If(cond bool, v1, v2 interface{}) interface{} {
+	if cond {
+		return v1
+	}
+	return v2
+}
+
+// IfLazy 返回 f1() 或 f2() 取决于 cond 是否为 true
+func IfLazy(cond bool, f1, f2 func() interface{}) interface{} {
+	if cond {
+		return f1()
+	}
+	return f2()
+}

@@ -110,7 +110,6 @@ func (h *RespHandler) Handle(ctx context.Context, conn net.Conn) {
 func (h *RespHandler) Close() error {
 	logger.Info("handler shutting down...")
 	h.closing.Set(true)
-	// TODO: concurrent wait
 	h.activeConn.Range(func(key interface{}, val interface{}) bool { //遍历连接的客户端
 		client := key.(*connection.Connection)
 		_ = client.Close()

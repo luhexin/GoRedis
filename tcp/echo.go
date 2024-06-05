@@ -65,7 +65,8 @@ func (handler *EchoHandler) Handle(ctx context.Context, conn net.Conn) {
 func (handler *EchoHandler) Close() error {
 	logger.Info("handler shutting down")
 	handler.closing.Set(true)
-	handler.activeConn.Range(func(key, value interface{}) bool { //关闭正在连接的客户端
+	//关闭正在连接的客户端
+	handler.activeConn.Range(func(key, value interface{}) bool {
 		// 匿名方法内容，传递给Range，施加到每一个k v上
 		client := key.(*EchoClient)
 		_ = client.Conn.Close()
