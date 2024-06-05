@@ -13,7 +13,7 @@ type connectionFactory struct {
 
 // MakeObject 创建连接池对象
 func (f *connectionFactory) MakeObject(ctx context.Context) (*pool.PooledObject, error) {
-	c, err := client.MakeClient(f.Peer)
+	c, err := client.MakeClient(f.Peer) //新建一个指向兄弟节点的客户端
 	if err != nil {
 		return nil, err
 	}

@@ -33,7 +33,7 @@ func (cluster *ClusterDatabase) getPeerClient(peer string) (*client.Client, erro
 	return conn, nil
 }
 
-// 归坏连接client，防止连接池耗尽
+// 归还连接client，防止连接池耗尽
 func (cluster *ClusterDatabase) returnPeerClient(peer string, peerClient *client.Client) error {
 	connectionFactory, ok := cluster.peerConnection[peer]
 	if !ok {
