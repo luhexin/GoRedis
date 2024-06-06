@@ -10,10 +10,12 @@
     - [x] 实现一致性哈希、使用开源连接池进行不同节点间命令的转发
 ---
 # 环境依赖
-windows 11、Go 1.17.7、GoLand 2021.3   
-开源线程池: https://github.com/jolestar/go-commons-pool v2.1.2
+- windows 11、Go 1.17.7、GoLand 2021.3   
+- 开源线程池: https://github.com/jolestar/go-commons-pool v2.1.2
+
 ---
 # 项目结构 
+
 ├─aof: aof持久化相关   
 ├─cluster: DB 集群   
 ├─config: 解析redis.conf配置   
@@ -39,6 +41,7 @@ windows 11、Go 1.17.7、GoLand 2021.3
 │  ├─parser: RESP解析器   
 │  └─reply: 消息回复   
 └─tcp: TCP Server
+
 ---
 # 项目启动
 1. go build打包两个项目, 作为集群两个从节点; 
