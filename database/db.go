@@ -11,13 +11,12 @@ import (
 
 // DB 存储数据并执行用户命令
 type DB struct {
-	index  int
+	index  int // redis分库序号，默认16个分库
 	data   dict.Dict
 	addAof func(CmdLine)
 }
 
-// ExecFunc 是Exec的接口
-// args不包括cmd line
+// ExecFunc Exec的接口
 type ExecFunc func(db *DB, args [][]byte) resp.Reply
 
 // CmdLine [][]byte, 代表命令行
@@ -44,7 +43,7 @@ func (db *DB) Exec(c resp.Connection, cmdLine [][]byte) resp.Reply {
 	if !validateArity(cmd.arity, cmdLine) {
 		return reply.MakeArgNumErrReply(cmdName)
 	}
-	fun := cmd.executor
+	fun := cmd.executor // 获取当前指令的具体执行方法
 	//SET K V -> K V
 	return fun(db, cmdLine[1:]) //调用具体的实现方法
 }
