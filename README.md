@@ -36,10 +36,10 @@
 │  └─wildcard: 通配符解析    
 ├─resp   
 │  ├─client: 集群节点转发客户端     
-│  ├─connection: 与客户端的连接   
+│  ├─connection: 记录与客户端连接信息   
 │  ├─handler: 接收并处理RESP报文   
 │  ├─parser: RESP解析器   
-│  └─reply: 消息回复   
+│  └─reply: 客户端和服务端双向通信的所有内容    
 └─tcp: TCP Server
 
 ---
@@ -59,10 +59,24 @@
 ---
 # 功能拆解
 ## 一、Redis协议解析器
-- Resp协议样式：*3\r\n$3\r\nSET\r\n$3\r\nkey\r\n$5\r\nvalue\r\n
-
-使用 NetAssist 模拟TCP客户端, 建立与Redis Server的连接(redis.conf中设置Redis Server的IP与端口)  
-
+- resp/parser/parser.go
+- RESP协议样式：*3\r\n$3\r\nSET\r\n$3\r\nkey\r\n$5\r\nvalue\r\n
+- RESPHandler实现逻辑: resp/handler/handler.go
+  1. 判断是否正在关闭handler
+     - 是的话拒绝连接
+  2. 保存客户端连接资料
+  3. 解析报文
+      - 异步调用, 返回管道, 需要监听管道
+  4. 监听管道
+     - 异常处理
+       - 用户断开连接 / 意外EOF / 使用了被关闭的链接
+         - 关闭连接
+       - 协议错误
+         1. 协议错误消息写回客户端
+         2. continue, 回到监听管道
+     - 正常执行
+       - 如果数据为空，continue, 回到监听管道
+       - 参数传入redis内核进行指令的执行，结果返回给client
 ## 二、实现内存数据库
 ### 2.1 最底层dict接口
 - datastruct/dict/dict.go
